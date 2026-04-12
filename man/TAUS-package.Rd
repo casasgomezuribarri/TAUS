@@ -18,8 +18,8 @@ thesis/paper materials). Use \code{citation("TAUS")} for the package citation.
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://github.com/casasgomezuribarri/Survival}
-  \item Report bugs at \url{https://github.com/casasgomezuribarri/Survival/issues}
+  \item \url{https://github.com/casasgomezuribarri/TAUS}
+  \item Report bugs at \url{https://github.com/casasgomezuribarri/TAUS/issues}
 }
 
 }
