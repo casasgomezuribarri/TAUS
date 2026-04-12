@@ -53,7 +53,9 @@ devtools::test()   # or: testthat::test_local(".")
 
 Iván Casas Gomez-Uribarri (maintainer), Simon A. Babayan, Fredros Okumu, Francesco Baldini, Mauro Pazmiño Betancourth.
 
-Methodology: see the TAUS manuscript (this repository and associated thesis/paper materials).
+Methodology: see the TAUS manuscript
+- doi:
+- the code, data and figures from the manuscript can be accessed in this repository under TAUS_paper
 
 ## Licence
 
