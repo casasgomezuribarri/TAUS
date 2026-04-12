@@ -15,7 +15,6 @@ Beta-KS bootstrap.
 TAUS manuscript: methodology and application (this repository and associated
 thesis/paper materials). Use \code{citation("TAUS")} for the package citation.
 }
-
 \seealso{
 Useful links:
 \itemize{
@@ -25,8 +24,7 @@ Useful links:
 
 }
 \author{
-Iván Casas Gomez-Uribarri (maintainer) \email{i.casas-gomez-uribarri.1@research.gla.ac.uk}
-
-Simon A. Babayan, Fredros Okumu, Francesco Baldini, Mauro Pazmiño Betancourth
+Iván Casas Gomez-Uribarri (maintainer, \email{i.casas-gomez-uribarri.1@research.gla.ac.uk}),
+Simon A. Babayan, Fredros Okumu, Francesco Baldini, Mauro Pazmiño Betancourth.
 }
 \keyword{internal}

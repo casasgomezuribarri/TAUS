@@ -93,7 +93,7 @@ dataset <- "simu" # simulated dataset
 # from now on everything should run without manual input:
 
 if (dataset == "simu") {
-  surv <- read.csv("TAUS/Data/synth/simu.csv") # dataset
+  surv <- read.csv("TAUS_paper/Data/synth/simu.csv") # dataset
 
   # realistic conditions
   p <- 0.4 # proporiton censored
@@ -139,7 +139,7 @@ if (dataset == "simu") {
   max_time <- max(surv_tmp[[time_var]])
   plot_names <- "simu"
 } else if (dataset == "dros1") {
-  surv_tmp <- read.csv("TAUS/Data/online/dros1.csv") # dataset
+  surv_tmp <- read.csv("TAUS_paper/Data/online/dros1.csv") # dataset
 
   surv_tmp <- surv_tmp %>%
     mutate( # extract replicate and phenotype from selection line
@@ -168,7 +168,7 @@ if (dataset == "simu") {
   max_time <- max(surv_tmp[[time_var]])
   plot_names <- "dros1"
 } else if (dataset == "dros2") {
-  surv_tmp <- read.csv("TAUS/Data/online/dros2.csv") # dataset
+  surv_tmp <- read.csv("TAUS_paper/Data/online/dros2.csv") # dataset
 
   surv_tmp <- surv_tmp %>% # remove unnecessary columns
     select(
