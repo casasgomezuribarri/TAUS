@@ -1,6 +1,27 @@
-# f(t) with color for censoring separated by some variable of interest
-# to do: allow a third colour to show left censoring
-
+#' Histogram of times to event, coloured by exit reason and faceted by a variable of interest
+#'
+#' Plots a faceted histogram of times to event (death or censoring), coloured by exit reason.
+#' Useful for visually inspecting the distribution of survival times and censoring
+#' across subgroups.
+#'
+#' @param data A data frame containing the survival data.
+#' @param time_var Name of the time variable in \code{data} (string).
+#' @param event_var Name of the event variable in \code{data} (string). Expected values are \code{"Dead"} and
+#'   \code{"Censored"}.
+#' @param var Name of the variable to facet by (string).
+#' @param nbins Number of histogram bins. Defaults to \code{max(data[[time_var]])}.
+#' @param ncol Number of columns in the facet layout. Defaults to 1.
+#'
+#' @return A \code{ggplot2} object, returned invisibly. The plot is also
+#'   printed as a side effect.
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' f_t_census(data = my_data, time_var = "time", event_var = "status", var = "group")
+#' }
+#'
 f_t_census <- function(data, # the dataset
                        time_var, # name of the time variable (string)
                        event_var, # name of the event variable (string) - values will show in the legend
@@ -31,8 +52,63 @@ f_t_census <- function(data, # the dataset
 }
 
 
-# plotting function for cond_surv output. It's got loads of options depending on arguments
-
+#' Plot conditional survival estimates
+#'
+#' Visualises the output of \code{cond_surv_mat()} in one of four modes
+#' depending on the combination of \code{tau_value} and \code{collapse_time}:
+#'
+#' \itemize{
+#'   \item \code{tau_value} specified, \code{collapse_time = FALSE}: plots
+#'     \eqn{P(T > \tau | T > t)} against \eqn{t} for a fixed \eqn{\tau}.
+#'   \item \code{tau_value} specified, \code{collapse_time = TRUE}: plots
+#'     \eqn{P(T > \tau)} of a randomly-sampled individual (i.e. age unknown) for each group.
+#'   \item \code{tau_value = NULL}, \code{collapse_time = FALSE}: plots a
+#'     heatmap of \eqn{P(T > \tau | T > t)} over all \eqn{t} and \eqn{\tau}.
+#'   \item \code{tau_value = NULL}, \code{collapse_time = TRUE}: plots
+#'     \eqn{P(T > \tau)} of a randomly-sampled individual (i.e. age unknown) for all values
+#'     of \eqn{\tau} for each group. Note that this is NOT a survival curve, despite the initial resemblance.
+#' }
+#'
+#' @param cond_surv Output of \code{cond_surv_mat()}.
+#' @param var_value Optional. Filter to a single group level (string). Must be
+#'   one of the values of the grouping variable used in \code{cond_surv_mat()}.
+#' @param tau_value Optional. Target age(s) to plot. Either a single numeric
+#'   value (i.e. same \eqn{\tau} fro all groups), or a vector. If vector, it must
+#'   be of the same length as there are levels in the grouping variable used in
+#'   \code{cond_surv_mat()}}
+#' @param color_var Optional. Name of the variable to colour lines or points
+#'   by (string). Defaults to the grouping variable if \code{NULL}.
+#' @param linetype_var Optional. Name of the variable to map to line type
+#'   (string). If \code{NULL}, all lines are solid.
+#' @param markershape_var Optional. Name of the variable to map to point shape
+#'   (string). Only used when \code{collapse_time = TRUE}. If \code{NULL},
+#'   no shape mapping is applied.
+#' @param ncol_hm Number of columns in the facet grid of the heatmap. Only used when
+#'   \code{tau_value = NULL} and \code{collapse_time = FALSE} (i.e. heatmap mode).
+#'   Defaults to 1.
+#' @param collapse_time If \code{TRUE}, plots \eqn{P(T > \tau)} marginalised
+#'   over \eqn{t} using \eqn{A(t)} as weights, instead of the full
+#'   time-dependent conditional survival curve. Defaults to \code{FALSE}.
+#'
+#' @return A \code{ggplot2} object, returned invisibly. The plot is also
+#'   printed as a side effect.
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' # Heatmap of all t and tau combinations
+#' cond_surv_plot(cond_surv)
+#'
+#' # Conditional survival curve for a fixed tau (conditional on age, plotted in the x-axis)
+#' cond_surv_plot(cond_surv, tau_value = 15)
+#'
+#' # Target-Age Unified Survival probability for a fixed tau, by group
+#' cond_surv_plot(cond_surv, tau_value = 15, collapse_time = TRUE)
+#'
+#' # Target-Age Unified Survival curve across all tau values
+#' cond_surv_plot(cond_surv, collapse_time = TRUE)
+#' }
 cond_surv_plot <- function(cond_surv, # the output of cond_surv_mat
                            var_value = NULL, # optional filter - must be one of the values of var
                            tau_value = NULL, # optional filter - must be a valid value within the range taus
