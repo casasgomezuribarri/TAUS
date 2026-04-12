@@ -3,11 +3,13 @@
 ##################################################################################################################################
 # Environment
 ##################################################################################################################################
-# a few packages 
-packages = c("tidyverse"
-             , "tibble"
-             , "dplyr"
-             , "rstudioapi"
+# a few packages
+packages <- c(
+  "tidyverse",
+  "tibble",
+  "dplyr",
+  "rstudioapi",
+  "remotes" # allows us to install TAUS from gh
 )
 
 for (i in packages) {
@@ -18,23 +20,20 @@ for (i in packages) {
 # a couple useful fucntions for setting up the right working directory:
 
 # returns full path to parent folder of current script
-whereami <-  function()
-{
-  this_file <- commandArgs() %>% 
+whereami <- function() {
+  this_file <- commandArgs() %>%
     tibble::enframe(name = NULL) %>%
-    tidyr::separate(col=value, into=c("key", "value"), sep="=", fill='right') %>%
+    tidyr::separate(col = value, into = c("key", "value"), sep = "=", fill = "right") %>%
     dplyr::filter(key == "--file") %>%
     dplyr::pull(value)
-  if (length(this_file)==0)
-  {
+  if (length(this_file) == 0) {
     this_file <- rstudioapi::getSourceEditorContext()$path
   }
   return(dirname(this_file))
 }
 
 # set working directory to be the parent of the above
-setwd_grandparent <- function()
-{
+setwd_grandparent <- function() {
   this_script <- whereami()
   setwd(dirname(this_script))
   # print working directory
@@ -45,7 +44,11 @@ setwd_grandparent <- function()
 # apply it
 setwd_grandparent() # working directory should be the folder of where TAUS is
 
-source("TAUS/taus.r") # loads dependencies and custom functions (the package...)
+# install TAUS fro GH
+library(TAUS) # doesnt work at first (ensure we don't have it at this point)
+# remove.packages("TAUS") # if the above works, remove and reinstall
+remotes::install_github("casasgomezuribarri/TAUS") # then we install from GH
+library(TAUS)
 
 # some more packages:
 packages <- c(
@@ -77,8 +80,8 @@ set.seed(1984) # reproducibility of random processes
 # choose the dataset (simulation or realworld excmples - comment/uncomment as appropriate)
 
 dataset <- "simu" # simulated dataset
-#dataset <- "dros1" # example 2: survival by temperature
-#dataset <- "dros2" # example 1: survival by country
+# dataset <- "dros1" # example 2: survival by temperature
+# dataset <- "dros2" # example 1: survival by country
 
 
 # datasets were named in chronological order of analysis
@@ -206,7 +209,7 @@ f_t <- f_t_census(
   ncol = 1
 )
 # save plot
-#ggsave(plot = f_t, paste0("Figures/", plot_names, "_histograms.png"), width = 6.5, height = 4.5, dpi = 400)
+# ggsave(plot = f_t, paste0("Figures/", plot_names, "_histograms.png"), width = 6.5, height = 4.5, dpi = 400)
 
 # formatting is dataset-specific
 
@@ -235,7 +238,7 @@ km_curves_emp <- create_survival_curve(
 )
 
 # save plot
-#ggsave(plot = km_curves_emp, paste0("Figures/", plot_names, "_KMcurves.png"), width = 6.5, height = 4.5, dpi = 400)
+# ggsave(plot = km_curves_emp, paste0("Figures/", plot_names, "_KMcurves.png"), width = 6.5, height = 4.5, dpi = 400)
 
 # KM curves - no confidence intervals (cleaner plos it useful later)
 km_curves_emp_norib <- create_survival_curve(
@@ -252,7 +255,7 @@ km_curves_emp_norib <- create_survival_curve(
 )
 
 # save plot
-#ggsave(plot = km_curves_emp_norib, paste0("Figures/", plot_names, "_KMcurves_noribbon.png"), width = 6.5, height = 4.5, dpi = 400)
+# ggsave(plot = km_curves_emp_norib, paste0("Figures/", plot_names, "_KMcurves_noribbon.png"), width = 6.5, height = 4.5, dpi = 400)
 
 ##################################################################################################################################
 # cox
@@ -283,39 +286,39 @@ if (dataset == "simu") {
   sch_int <- plot(cox.zph(coxmodel), var = "mutation:habitat")
 
   # save them all
-#  for (i in 1:3) {
-#    if (i == 1) var_sch <- "mutation"
-#    if (i == 2) var_sch <- "habitat"
-#    if (i == 3) var_sch <- "interaction"
-#    png(
-#      filename = paste0("Figures/", plot_names, "_SchRes_", var_sch, ".png"),
-#      width = 2000, height = 2000, res = 400
-#    )
-#    plot(cox.zph(coxmodel)[i])
-#    dev.off()
-#  }
+  #  for (i in 1:3) {
+  #    if (i == 1) var_sch <- "mutation"
+  #    if (i == 2) var_sch <- "habitat"
+  #    if (i == 3) var_sch <- "interaction"
+  #    png(
+  #      filename = paste0("Figures/", plot_names, "_SchRes_", var_sch, ".png"),
+  #      width = 2000, height = 2000, res = 400
+  #    )
+  #    plot(cox.zph(coxmodel)[i])
+  #    dev.off()
+  #  }
 } else if (dataset == "dros1") {
   sch_pop <- plot(cox.zph(coxmodel), var = "temp")
 
   # save
-#  var_sch <- "population"
-#  png(
-#    filename = paste0("Figures/", plot_names, "_SchRes_", var_sch, ".png"),
-#    width = 2000, height = 2000, res = 400
-#  )
-#  plot(cox.zph(coxmodel)[1])
-#  dev.off()
+  #  var_sch <- "population"
+  #  png(
+  #    filename = paste0("Figures/", plot_names, "_SchRes_", var_sch, ".png"),
+  #    width = 2000, height = 2000, res = 400
+  #  )
+  #  plot(cox.zph(coxmodel)[1])
+  #  dev.off()
 } else if (dataset == "dros2") {
   sch_pop <- plot(cox.zph(coxmodel), var = "Population")
 
   # save
-#  var_sch <- "population"
-#  png(
-#    filename = paste0("Figures/", plot_names, "_SchRes_", var_sch, ".png"),
-#    width = 2000, height = 2000, res = 400
-#  )
-#  plot(cox.zph(coxmodel)[1])
-#  dev.off()
+  #  var_sch <- "population"
+  #  png(
+  #    filename = paste0("Figures/", plot_names, "_SchRes_", var_sch, ".png"),
+  #    width = 2000, height = 2000, res = 400
+  #  )
+  #  plot(cox.zph(coxmodel)[1])
+  #  dev.off()
 }
 
 ##################################################################################################################################
@@ -362,10 +365,10 @@ tidy(parmodel)
 plot(parmodel)
 
 # save it
-#png(
+# png(
 #  filename = paste0("Figures/", plot_names, "_parametric_fit_simpleton.png"),
 #  width = 2000, height = 2000, res = 400
-#)
+# )
 plot(parmodel)
 dev.off()
 
@@ -439,7 +442,7 @@ plot <- km_curves_emp +
 plot
 
 # save plot
-#ggsave(plot = plot, filename = paste0("Figures/", plot_names, "_KMcurves_with_parametric.png"), width = 6.5, height = 4.5, dpi = 400)
+# ggsave(plot = plot, filename = paste0("Figures/", plot_names, "_KMcurves_with_parametric.png"), width = 6.5, height = 4.5, dpi = 400)
 
 
 # right. Now without ribbons
@@ -450,7 +453,7 @@ plot_clean <- km_curves_emp_norib +
 plot_clean
 
 # save plot
-#ggsave(plot = plot_clean, filename = paste0("Figures/", plot_names, "_KMcurves_with_parametric_cleaner.png"), width = 6.5, height = 4.5, dpi = 400)
+# ggsave(plot = plot_clean, filename = paste0("Figures/", plot_names, "_KMcurves_with_parametric_cleaner.png"), width = 6.5, height = 4.5, dpi = 400)
 
 ##################################################################################################################################
 # taus
@@ -537,7 +540,7 @@ if (dataset == "simu") {
     )
 
   p
-  #ggsave("Figures/PowerAnalysisAt.png", plot = p, width = 6.5, height = 4.5, dpi = 400)
+  # ggsave("Figures/PowerAnalysisAt.png", plot = p, width = 6.5, height = 4.5, dpi = 400)
 }
 
 # stats:
@@ -575,7 +578,6 @@ stats <- pairwise_test(cond_surv # the output of cond_surv_mat
 )
 
 
-
 # plotting with cond_surv_plot:
 
 # if tau_value == NULL && collapse_time == FALSE (default values for both)
@@ -584,7 +586,7 @@ cond_surv_heatmap <- cond_surv_plot(cond_surv,
   ncol_hm = 2
 )
 # save plot
-#ggsave(plot = cond_surv_heatmap, paste0("Figures/", plot_names, "_heatmaps.png"), width = 6.5, height = 4.5, dpi = 400)
+# ggsave(plot = cond_surv_heatmap, paste0("Figures/", plot_names, "_heatmaps.png"), width = 6.5, height = 4.5, dpi = 400)
 
 # if tau_value is specified
 # P(T>tau|T>t) ~ t for the specified tau value
@@ -617,7 +619,7 @@ cond_surv_line <- cond_surv_plot(cond_surv,
   linetype_var = linetype_var
 )
 # save plot
-#ggsave(plot = cond_surv_line, paste0("Figures/", plot_names, "_P(T>", tau_value, "|T>t).png"), width = 6.5, height = 4.5, dpi = 400)
+# ggsave(plot = cond_surv_line, paste0("Figures/", plot_names, "_P(T>", tau_value, "|T>t).png"), width = 6.5, height = 4.5, dpi = 400)
 
 # if tau_value == NULL && collapse_time == TRUE
 # P(T>tau) ~ tau
@@ -628,7 +630,7 @@ cond_surv_curve <- cond_surv_plot(cond_surv,
 )
 
 # save plot
-#ggsave(plot = cond_surv_curve, paste0("Figures/", plot_names, "_P(T>tau).png"), width = 6.5, height = 4.5, dpi = 400)
+# ggsave(plot = cond_surv_curve, paste0("Figures/", plot_names, "_P(T>tau).png"), width = 6.5, height = 4.5, dpi = 400)
 
 
 # if tau_value != NULL && collapse_time == TRUE
@@ -648,7 +650,7 @@ cond_surv_scatter <- cond_surv_plot(cond_surv,
   color_var = color_var,
   markershape_var = markershape_var
 )
-#ggsave(plot = cond_surv_scatter, paste0("Figures/", plot_names, "_P(T>", tau_value, ").png"), width = 6.5, height = 4.5, dpi = 400)
+# ggsave(plot = cond_surv_scatter, paste0("Figures/", plot_names, "_P(T>", tau_value, ").png"), width = 6.5, height = 4.5, dpi = 400)
 
 # if each group has a different tau of interest (only for simu):
 
@@ -664,6 +666,5 @@ if (dataset == "simu") {
     markershape_var = markershape_var
   )
 
-  #ggsave(plot = cond_surv_scatter2, paste0("Figures/", plot_names, "_P(T>taus).png"), width = 6.5, height = 4.5, dpi = 400)
+  # ggsave(plot = cond_surv_scatter2, paste0("Figures/", plot_names, "_P(T>taus).png"), width = 6.5, height = 4.5, dpi = 400)
 }
-
