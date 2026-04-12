@@ -84,11 +84,9 @@ dataset <- "simu" # simulated dataset
 # dataset <- "dros2" # example 1: survival by country
 
 
-# datasets were named in chronological order of analysis
-# examples were named in order of appearance in the manuscript (simpler to more complex)
-
-# Yes, I am aware that the names are confusing.
-# No, I'm not going to rename everything (bound to make mistakes...)
+# datasets were named in chronological order of analysis.
+# the order of appearance in the manuscript is different.
+# Check commented text next to dataset definitions above.
 
 # from now on everything should run without manual input:
 
@@ -209,7 +207,7 @@ f_t <- f_t_census(
   ncol = 1
 )
 # save plot
-ggsave(plot = f_t, paste0("Figures/", plot_names, "_histograms.png"), width = 6.5, height = 4.5, dpi = 400)
+# ggsave(plot = f_t, paste0("Figures/", plot_names, "_histograms.png"), width = 6.5, height = 4.5, dpi = 400)
 
 # formatting is dataset-specific
 
