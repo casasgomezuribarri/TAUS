@@ -8,7 +8,7 @@ From source (from the repo root, with R ≥ 4.0):
 
 ```r
 install.packages("remotes")
-remotes::install_github("casasgomezuribarri/Survival", subdir = ".", ref = "package")
+remotes::install_github("casasgomezuribarri/TAUS")
 ```
 
 Or clone the repo, then in R:
