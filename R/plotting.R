@@ -1,4 +1,37 @@
-# i love this
+# f(t) with color for censoring separated by some variable of interest
+# to do: allow a third colour to show left censoring
+
+f_t_census <- function(data, # the dataset
+                       time_var, # name of the time variable (string)
+                       event_var, # name of the event variable (string) - values will show in the legend
+                       var, # variable to facet by (string)
+                       nbins = max(data[[time_var]]), # max(t) by default
+                       ncol = 1) {
+    ft <- ggplot(data, aes(x = !!sym(time_var), fill = !!sym(event_var))) +
+        geom_histogram(position = "dodge", bins = nbins, alpha = 1) +
+        scale_fill_manual(values = c("Dead" = "red", "Censored" = "green")) +
+        labs(
+            title = "Histogram of survival times",
+            x = "Time (days)",
+            y = "Frequency",
+            fill = "Exit reason"
+        ) +
+        facet_wrap(as.formula(paste("~", var)), ncol = ncol) + # parse var
+        # theme_minimal() +
+        theme(
+            plot.title = element_text(size = 20, hjust = 0.5),
+            axis.title = element_text(size = 16),
+            axis.text = element_text(size = 13),
+            strip.text = element_text(size = 16),
+            legend.title = element_text(size = 16),
+            legend.text = element_text(size = 13)
+        )
+    print(ft) # display the plot
+    invisible(ft) # return without printing - so it can be saved in a variable
+}
+
+
+# plotting function for cond_surv output. It's got loads of options depending on arguments
 
 cond_surv_plot <- function(cond_surv, # the output of cond_surv_mat
                            var_value = NULL, # optional filter - must be one of the values of var
