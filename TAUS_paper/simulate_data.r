@@ -1,42 +1,41 @@
 # this script creates a dataset of individuals on two islands, A and B, with different traits and lifespans.
+# this is the simulated dataset used in the TAUS paper.
 
-# a few packages 
-packages = c("tidyverse"
-             , "tibble"
-             , "dplyr"
-             , "rstudioapi"
+# a few packages
+packages <- c(
+    "tidyverse",
+    "tibble",
+    "dplyr",
+    "rstudioapi"
 )
 
 for (i in packages) {
-  if (!require(i, character.only = TRUE)) install.packages(i)
-  library(i, character.only = TRUE)
+    if (!require(i, character.only = TRUE)) install.packages(i)
+    library(i, character.only = TRUE)
 }
 
 # a couple useful fucntions for setting up the right working directory:
 
 # returns full path to parent folder of current script
-whereami <-  function()
-{
-  this_file <- commandArgs() %>% 
-    tibble::enframe(name = NULL) %>%
-    tidyr::separate(col=value, into=c("key", "value"), sep="=", fill='right') %>%
-    dplyr::filter(key == "--file") %>%
-    dplyr::pull(value)
-  if (length(this_file)==0)
-  {
-    this_file <- rstudioapi::getSourceEditorContext()$path
-  }
-  return(dirname(this_file))
+whereami <- function() {
+    this_file <- commandArgs() %>%
+        tibble::enframe(name = NULL) %>%
+        tidyr::separate(col = value, into = c("key", "value"), sep = "=", fill = "right") %>%
+        dplyr::filter(key == "--file") %>%
+        dplyr::pull(value)
+    if (length(this_file) == 0) {
+        this_file <- rstudioapi::getSourceEditorContext()$path
+    }
+    return(dirname(this_file))
 }
 
 # set working directory to be the parent of the above
-setwd_grandparent <- function()
-{
-  this_script <- whereami()
-  setwd(dirname(this_script))
-  # print working directory
-  print("Current working directory:")
-  print(getwd())
+setwd_grandparent <- function() {
+    this_script <- whereami()
+    setwd(dirname(this_script))
+    # print working directory
+    print("Current working directory:")
+    print(getwd())
 }
 
 # apply it

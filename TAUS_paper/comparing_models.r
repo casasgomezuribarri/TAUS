@@ -1,4 +1,7 @@
 # this script compares taus cox and parametric survival models
+# for three datasets: a simulated one and two real-world examples (drosophila survival by temperature and by country of origin)
+
+# this script reproduces the code in the TAUS manuscript, doi:
 
 ##################################################################################################################################
 # Environment
