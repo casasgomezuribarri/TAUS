@@ -2,6 +2,7 @@
 
 export(cond_surv_mat)
 export(cond_surv_plot)
+export(create_survival_curve)
 export(estimate_beta_params)
 export(f_t_census)
 export(kl_divergence)

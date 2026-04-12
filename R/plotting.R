@@ -411,3 +411,157 @@ cond_surv_plot <- function(cond_surv, # the output of cond_surv_mat
         invisible(plot) # return without printing - so it can be saved in a variable
     }
 }
+
+#' Kaplan-Meier survival curve
+#'
+#' Fits and plots a Kaplan-Meier survival curve using \code{survfit2()} and
+#' \code{ggsurvfit()}. Supports grouping, confidence intervals, custom colours
+#' and linetypes, and optional median survival annotations.
+#'
+#' @param data A data frame containing the survival data.
+#' @param title Plot title (string).
+#' @param colors Optional. Named or unnamed character vector of colours for
+#'   each group level. Required if \code{median_surv = TRUE}.
+#' @param linetypes Optional. Named or unnamed character vector of linetypes
+#'   for each group level. If \code{NULL}, all lines are solid.
+#' @param title_size Font size for the plot title. Defaults to 20.
+#' @param conf_int If \code{TRUE}, adds a shaded confidence interval around
+#'   each survival curve. Defaults to \code{TRUE}.
+#' @param group Name of the grouping variable (string). Use \code{NA} for an
+#'   overall survival curve with no grouping.
+#' @param time_var Name of the time variable (string).
+#' @param event_var Name of the event variable (string). Expected to be a
+#'   binary variable where 1 indicates the event (death) and 0 censoring.
+#' @param xmax Maximum value for the x-axis.
+#' @param legend Legend position. Passed to \code{ggplot2::theme()}.
+#'   Common values are \code{"none"}, \code{"bottom"}, \code{"right"}.
+#'   Defaults to \code{"none"}.
+#' @param median_surv If \code{TRUE}, adds median survival annotations and
+#'   reference lines to the plot. Requires \code{colors} to be specified.
+#'   Defaults to \code{TRUE}.
+#'
+#' @return A \code{ggplot2} object, returned invisibly. The plot is also
+#'   printed as a side effect.
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' # Overall survival curve, no grouping
+#' create_survival_curve(
+#'     data = my_data, title = "Overall survival",
+#'     group = NA, time_var = "time", event_var = "status",
+#'     xmax = 30, median_surv = FALSE
+#' )
+#'
+#' # Grouped survival curve with median annotations
+#' create_survival_curve(
+#'     data = my_data, title = "Survival by group",
+#'     group = "treatment", time_var = "time", event_var = "status",
+#'     colors = c("red", "blue"), xmax = 30
+#' )
+#' }
+create_survival_curve <- function(data,
+                                  title,
+                                  colors = NULL,
+                                  linetypes = NULL,
+                                  title_size = 20,
+                                  conf_int = TRUE,
+                                  group,
+                                  time_var,
+                                  event_var,
+                                  xmax,
+                                  legend = "none",
+                                  median_surv = TRUE) {
+    if (!(is.na(group))) {
+        # convert group to a factor, define formula, fit KM model
+        data[[group]] <- as.factor(data[[group]])
+        surv_formula <- as.formula(paste0("Surv(", time_var, ", ", event_var, ") ~ ", group))
+        fit <- survfit(surv_formula, data = data)
+
+        # extract median survival for each level in data[[group]]
+        surv_data <- summary(fit)$table
+        annotations <- data.frame(
+            group = rownames(surv_data),
+            x = surv_data[, "median"]
+        )
+        labels <- levels(data[[group]]) # labels for the annotation
+    } else {
+        # convert group to a factor, define formula, fit KM model
+        surv_formula <- as.formula("data$event ~ 1")
+        fit <- survfit2(surv_formula)
+
+        # extract median survival for each level in data[[group]]
+        surv_data <- summary(fit)$table
+        annotations <- data.frame(
+            group = c("All"),
+            x = surv_data["median"]
+        )
+        labels <- c("All")
+    }
+
+    use_linetype_aes <- !is.null(linetypes)
+
+    # Plot the survival curves
+    p <- survfit2(surv_formula, data = data) %>%
+        ggsurvfit(type = "survival", linetype_aes = use_linetype_aes) +
+        labs(
+            x = "Time (days)",
+            y = "Proportion alive"
+        ) +
+        xlim(0, xmax) + # Make sure all plots have the same axis limits
+        ylim(0, 1) + # Make sure all plots have the same axis limits
+        (if (!is.null(colors)) scale_fill_manual(values = colors) else NULL) + # Set fill colors based on the palette
+        (if (!is.null(colors)) scale_color_manual(values = colors) else NULL) + # Set line colors based on the palette
+        (if (!is.null(linetypes)) scale_linetype_manual(values = linetypes) else NULL) +
+        theme(
+            axis.text = element_text(size = 13), # Font size for axis ticks
+            axis.title = element_text(size = 16), # Adjust font of labels
+            legend.position = legend, # Try "bottom" or "none"
+            legend.text = element_text(size = 13),
+            legend.title = element_text(size = 16),
+            plot.margin = margin(8, 8, 8, 8), # Plot margins (t, r, b, l)
+            plot.title = element_text(size = title_size, hjust = 0.5) # Title settings
+        ) +
+        ggtitle(title)
+
+    if (conf_int == TRUE) p <- p + add_confidence_interval(alpha = 0.1)
+
+
+    if (median_surv == TRUE) {
+        if (is.na(colors)) {
+            stop("Median survival annotations need color specifications")
+        }
+
+        # Add a single "Median survival" annotation
+        p <- p + annotate("text",
+            x = 0, y = 0.25,
+            label = "Median survival:",
+            size = 8, color = "black", fontface = "bold", hjust = 0
+        )
+
+        # add the median survival for each level, and the lines
+        for (i in 1:nrow(annotations)) {
+            # add horizontal line
+            p <- p + geom_segment(
+                x = 0, xend = annotations$x[i], y = 0.5, yend = 0.5,
+                color = colors[i], linetype = "solid"
+            )
+
+            # add vertical line
+            p <- p + geom_segment(
+                x = annotations$x[i], xend = annotations$x[i], y = 0.5, yend = 0,
+                color = colors[i], linetype = "solid"
+            )
+
+            # Add annotation text
+            p <- p + annotate("text",
+                x = 0, y = 0.25 - i * 0.05, # Adjust y position for each label
+                label = paste(labels[i], ": ", round(annotations$x[i], 1)),
+                size = 8, color = colors[i], hjust = 0
+            )
+        }
+    }
+    print(p)
+    invisible(p)
+}
