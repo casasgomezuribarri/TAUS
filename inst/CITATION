@@ -1,0 +1,16 @@
+citHeader("To cite the TAUS package in publications use:")
+citEntry(
+  entry   = "Unpublished",
+  title   = "TAUS: Target-Age Unified Survival",
+  author  = personList(
+    person("Iván", "Casas Gomez-Uribarri", role = "aut", email = "i.casas-gomez-uribarri.1@research.gla.ac.uk"),
+    person("Simon A.", "Babayan", role = "aut"),
+    person("Fredros", "Okumu", role = "aut"),
+    person("Francesco", "Baldini", role = "aut"),
+    person("Mauro", "Pazmiño Betancourth", role = "aut")
+  ),
+  year    = format(Sys.Date(), "%Y"),
+  note    = "R package. Methodology described in the TAUS manuscript.",
+  url     = "https://github.com/casasgomezuribarri/Survival"
+)
+citFooter("See the TAUS manuscript for the methodological reference.")

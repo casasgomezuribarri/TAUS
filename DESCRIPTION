@@ -1,0 +1,20 @@
+Package: TAUS
+Title: Target-Age Unified Survival
+Version: 0.1.0
+Authors@R: c(
+    person("Iván", "Casas Gomez-Uribarri", email = "i.casas-gomez-uribarri.1@research.gla.ac.uk", role = c("aut", "cre")),
+    person("Simon A.", "Babayan", role = "aut"),
+    person("Fredros", "Okumu", role = "aut"),
+    person("Francesco", "Baldini", role = "aut"),
+    person("Mauro", "Pazmiño Betancourth", role = "aut")
+  )
+Description: Computes age-specific probabilities of outliving a target age (conditional survival P(T>tau|T>t)) and the probability that a randomly sampled individual of unknown age will outlive tau (O_tau). Does not assume proportional hazards or a parametric survival form. Supports pairwise comparison of O_tau across groups via Beta-KS bootstrap. See the TAUS manuscript for methodology.
+License: GPL-3
+URL: https://github.com/casasgomezuribarri/Survival
+BugReports: https://github.com/casasgomezuribarri/Survival/issues
+Depends: R (>= 4.0)
+Imports: dplyr, magrittr, tidyr, tibble, purrr, rlang, survival
+Suggests: knitr, testthat
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.3
