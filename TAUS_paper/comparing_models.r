@@ -207,7 +207,7 @@ f_t <- f_t_census(
   ncol = 1
 )
 # save plot
-# ggsave(plot = f_t, paste0("Figures/", plot_names, "_histograms.png"), width = 6.5, height = 4.5, dpi = 400)
+# ggsave(plot = f_t, paste0("TAUS_paper/Figures/", plot_names, "_histograms.png"), width = 6.5, height = 4.5, dpi = 400)
 
 # formatting is dataset-specific
 
@@ -236,7 +236,7 @@ km_curves_emp <- create_survival_curve(
 )
 
 # save plot
-# ggsave(plot = km_curves_emp, paste0("Figures/", plot_names, "_KMcurves.png"), width = 6.5, height = 4.5, dpi = 400)
+# ggsave(plot = km_curves_emp, paste0("TAUS_paper/Figures/", plot_names, "_KMcurves.png"), width = 6.5, height = 4.5, dpi = 400)
 
 # KM curves - no confidence intervals (cleaner plos it useful later)
 km_curves_emp_norib <- create_survival_curve(
@@ -253,7 +253,7 @@ km_curves_emp_norib <- create_survival_curve(
 )
 
 # save plot
-# ggsave(plot = km_curves_emp_norib, paste0("Figures/", plot_names, "_KMcurves_noribbon.png"), width = 6.5, height = 4.5, dpi = 400)
+# ggsave(plot = km_curves_emp_norib, paste0("TAUS_paper/Figures/", plot_names, "_KMcurves_noribbon.png"), width = 6.5, height = 4.5, dpi = 400)
 
 ##################################################################################################################################
 # cox
@@ -289,7 +289,7 @@ if (dataset == "simu") {
   #    if (i == 2) var_sch <- "habitat"
   #    if (i == 3) var_sch <- "interaction"
   #    png(
-  #      filename = paste0("Figures/", plot_names, "_SchRes_", var_sch, ".png"),
+  #      filename = paste0("TAUS_paper/Figures/", plot_names, "_SchRes_", var_sch, ".png"),
   #      width = 2000, height = 2000, res = 400
   #    )
   #    plot(cox.zph(coxmodel)[i])
@@ -301,7 +301,7 @@ if (dataset == "simu") {
   # save
   #  var_sch <- "population"
   #  png(
-  #    filename = paste0("Figures/", plot_names, "_SchRes_", var_sch, ".png"),
+  #    filename = paste0("TAUS_paper/Figures/", plot_names, "_SchRes_", var_sch, ".png"),
   #    width = 2000, height = 2000, res = 400
   #  )
   #  plot(cox.zph(coxmodel)[1])
@@ -312,7 +312,7 @@ if (dataset == "simu") {
   # save
   #  var_sch <- "population"
   #  png(
-  #    filename = paste0("Figures/", plot_names, "_SchRes_", var_sch, ".png"),
+  #    filename = paste0("TAUS_paper/Figures/", plot_names, "_SchRes_", var_sch, ".png"),
   #    width = 2000, height = 2000, res = 400
   #  )
   #  plot(cox.zph(coxmodel)[1])
@@ -364,7 +364,7 @@ plot(parmodel)
 
 # save it
 # png(
-#  filename = paste0("Figures/", plot_names, "_parametric_fit_simpleton.png"),
+#  filename = paste0("TAUS_paper/Figures/", plot_names, "_parametric_fit_simpleton.png"),
 #  width = 2000, height = 2000, res = 400
 # )
 plot(parmodel)
@@ -440,7 +440,7 @@ plot <- km_curves_emp +
 plot
 
 # save plot
-# ggsave(plot = plot, filename = paste0("Figures/", plot_names, "_KMcurves_with_parametric.png"), width = 6.5, height = 4.5, dpi = 400)
+# ggsave(plot = plot, filename = paste0("TAUS_paper/Figures/", plot_names, "_KMcurves_with_parametric.png"), width = 6.5, height = 4.5, dpi = 400)
 
 
 # right. Now without ribbons
@@ -451,7 +451,7 @@ plot_clean <- km_curves_emp_norib +
 plot_clean
 
 # save plot
-# ggsave(plot = plot_clean, filename = paste0("Figures/", plot_names, "_KMcurves_with_parametric_cleaner.png"), width = 6.5, height = 4.5, dpi = 400)
+# ggsave(plot = plot_clean, filename = paste0("TAUS_paper/Figures/", plot_names, "_KMcurves_with_parametric_cleaner.png"), width = 6.5, height = 4.5, dpi = 400)
 
 ##################################################################################################################################
 # taus
@@ -538,7 +538,7 @@ if (dataset == "simu") {
     )
 
   p
-  # ggsave("Figures/PowerAnalysisAt.png", plot = p, width = 6.5, height = 4.5, dpi = 400)
+  # ggsave("TAUS_paper/Figures/PowerAnalysisAt.png", plot = p, width = 6.5, height = 4.5, dpi = 400)
 }
 
 # stats:
@@ -584,7 +584,7 @@ cond_surv_heatmap <- cond_surv_plot(cond_surv,
   ncol_hm = 2
 )
 # save plot
-# ggsave(plot = cond_surv_heatmap, paste0("Figures/", plot_names, "_heatmaps.png"), width = 6.5, height = 4.5, dpi = 400)
+# ggsave(plot = cond_surv_heatmap, paste0("TAUS_paper/Figures/", plot_names, "_heatmaps.png"), width = 6.5, height = 4.5, dpi = 400)
 
 # if tau_value is specified
 # P(T>tau|T>t) ~ t for the specified tau value
@@ -617,7 +617,7 @@ cond_surv_line <- cond_surv_plot(cond_surv,
   linetype_var = linetype_var
 )
 # save plot
-# ggsave(plot = cond_surv_line, paste0("Figures/", plot_names, "_P(T>", tau_value, "|T>t).png"), width = 6.5, height = 4.5, dpi = 400)
+# ggsave(plot = cond_surv_line, paste0("TAUS_paper/Figures/", plot_names, "_P(T>", tau_value, "|T>t).png"), width = 6.5, height = 4.5, dpi = 400)
 
 # if tau_value == NULL && collapse_time == TRUE
 # P(T>tau) ~ tau
@@ -628,7 +628,7 @@ cond_surv_curve <- cond_surv_plot(cond_surv,
 )
 
 # save plot
-# ggsave(plot = cond_surv_curve, paste0("Figures/", plot_names, "_P(T>tau).png"), width = 6.5, height = 4.5, dpi = 400)
+# ggsave(plot = cond_surv_curve, paste0("TAUS_paper/Figures/", plot_names, "_P(T>tau).png"), width = 6.5, height = 4.5, dpi = 400)
 
 
 # if tau_value != NULL && collapse_time == TRUE
@@ -648,7 +648,7 @@ cond_surv_scatter <- cond_surv_plot(cond_surv,
   color_var = color_var,
   markershape_var = markershape_var
 )
-# ggsave(plot = cond_surv_scatter, paste0("Figures/", plot_names, "_P(T>", tau_value, ").png"), width = 6.5, height = 4.5, dpi = 400)
+# ggsave(plot = cond_surv_scatter, paste0("TAUS_paper/Figures/", plot_names, "_P(T>", tau_value, ").png"), width = 6.5, height = 4.5, dpi = 400)
 
 # if each group has a different tau of interest (only for simu):
 
@@ -664,5 +664,5 @@ if (dataset == "simu") {
     markershape_var = markershape_var
   )
 
-  # ggsave(plot = cond_surv_scatter2, paste0("Figures/", plot_names, "_P(T>taus).png"), width = 6.5, height = 4.5, dpi = 400)
+  # ggsave(plot = cond_surv_scatter2, paste0("TAUS_paper/Figures/", plot_names, "_P(T>taus).png"), width = 6.5, height = 4.5, dpi = 400)
 }
