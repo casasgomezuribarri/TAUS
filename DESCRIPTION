@@ -10,8 +10,8 @@ Authors@R: c(
   )
 Description: Computes age-specific probabilities of outliving a target age (conditional survival P(T>tau|T>t)) and the probability that a randomly sampled individual of unknown age will outlive tau (O_tau). Does not assume proportional hazards or a parametric survival form. Supports pairwise comparison of O_tau across groups via Beta-KS bootstrap. See the TAUS manuscript for methodology.
 License: GPL-3
-URL: https://github.com/casasgomezuribarri/Survival
-BugReports: https://github.com/casasgomezuribarri/Survival/issues
+URL: https://github.com/casasgomezuribarri/TAUS
+BugReports: https://github.com/casasgomezuribarri/TAUS/issues
 Depends: R (>= 4.0)
 Imports: dplyr, magrittr, tidyr, tibble, purrr, rlang, survival
 Suggests: knitr, testthat
