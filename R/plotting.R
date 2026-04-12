@@ -75,7 +75,7 @@ f_t_census <- function(data, # the dataset
 #' @param tau_value Optional. Target age(s) to plot. Either a single numeric
 #'   value (i.e. same \eqn{\tau} fro all groups), or a vector. If vector, it must
 #'   be of the same length as there are levels in the grouping variable used in
-#'   \code{cond_surv_mat()}}
+#'   \code{cond_surv_mat()}
 #' @param color_var Optional. Name of the variable to colour lines or points
 #'   by (string). Defaults to the grouping variable if \code{NULL}.
 #' @param linetype_var Optional. Name of the variable to map to line type
