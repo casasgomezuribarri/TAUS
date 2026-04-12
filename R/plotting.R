@@ -565,3 +565,183 @@ create_survival_curve <- function(data,
     print(p)
     invisible(p)
 }
+
+
+#' Compare parametric survival model fits
+#'
+#' Fits multiple parametric survival distributions to a dataset and compares
+#' them by AIC, log-likelihood, and a goodness-of-fit p-value based on
+#' Cox-Snell residuals. Produces a grid of survival, hazard, and/or cumulative
+#' hazard plots for visual comparison.
+#'
+#' The goodness-of-fit p-value is computed by fitting a Kaplan-Meier curve to
+#' the Cox-Snell residuals and testing whether they follow an Exp(1)
+#' distribution via a Kolmogorov-Smirnov test. A high p-value indicates a
+#' good fit. See \code{\link[flexsurv]{coxsnell_flexsurvreg}} for details.
+#'
+#' @param data A data frame containing the survival data.
+#' @param time_var Name of the time variable (string).
+#' @param event_var Name of the event variable (string), following the
+#'   conventions of the \code{survival} package (1 = event, 0 = censored).
+#' @param dists Character vector of distributions to fit. Defaults to all
+#'   supported distributions: \code{c("genf", "gengamma", "weibull",
+#'   "gompertz", "gamma", "llogis", "lnorm", "exp")}. Distributions that
+#'   fail to converge are silently skipped with a warning.
+#' @param funcs Character vector of plot types to produce. Any combination of
+#'   \code{"survival"}, \code{"hazard"}, and \code{"cumhaz"}.
+#'   Defaults to all three.
+#' @param plot_title Title for the overall plot grid. Defaults to
+#'   \code{"Parametric Survival Model Fits"}.
+#'
+#' @return A list with three elements, returned invisibly:
+#' \describe{
+#'   \item{\code{fits}}{A named list of fitted \code{flexsurvreg} objects,
+#'     one per successfully fitted distribution.}
+#'   \item{\code{comparison}}{A data frame with one row per distribution,
+#'     sorted by AIC, containing columns \code{Distribution}, \code{AIC},
+#'     \code{LogLik}, and \code{KS_p} (the goodness-of-fit p-value).}
+#'   \item{\code{plot}}{A recorded base R plot object of the comparison grid.}
+#' }
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' result <- compare_parametric_fits(
+#'     data = my_data,
+#'     time_var = "time",
+#'     event_var = "status"
+#' )
+#'
+#' # View the comparison table
+#' result$comparison
+#'
+#' # Fit only a subset of distributions
+#' compare_parametric_fits(
+#'     data = my_data,
+#'     time_var = "time",
+#'     event_var = "status",
+#'     dists = c("weibull", "lnorm", "exp"),
+#'     funcs = c("survival", "hazard")
+#' )
+#' }
+compare_parametric_fits <- function(data # a lifetable
+                                    , time_var # the variable with times
+                                    , event_var # variable with status  (conventions from survival package)
+                                    , dists = c("genf", "gengamma", "weibull", "gompertz", "gamma", "llogis", "lnorm", "exp") # distributions to fit, default is all of them
+                                    , funcs = c("survival", "hazard", "cumhaz") # types of plots to produce, default is all of them
+                                    , plot_title = "Parametric Survival Model Fits") {
+    # useful for later
+    pretty_dict <- c(
+        genf     = "Generalised F",
+        gengamma = "Generalised Gamma",
+        weibull  = "Weibull",
+        gompertz = "Gompertz",
+        gamma    = "Gamma",
+        llogis   = "Log-Logistic",
+        lnorm    = "Log-Normal",
+        exp      = "Exponential"
+    )
+
+    # fit all models
+    fit_list <- list()
+    for (dist in dists) {
+        fit_list[[dist]] <- tryCatch(
+            flexsurvreg(Surv(data[[time_var]], data[[event_var]]) ~ 1, data = data, dist = dist),
+            error = function(e) {
+                message(paste("Skipping", dist, "due to error:", e$message))
+                NULL
+            }
+        )
+    }
+
+    # remove NULLS
+    fit_list <- fit_list[!sapply(fit_list, is.null)]
+    if (length(fit_list) == 0) { # dont continue if all NULL
+        warning("No models were successfully fitted.")
+        return(list(comparison = data.frame(), fits = NULL, plot = NULL))
+    }
+
+    # extract AIC, loglik, and pretty name for each fit
+    aics <- sapply(fit_list, AIC)
+    logliks <- sapply(fit_list, function(fit) fit$loglik)
+
+    # generating a pvalue based on coxsnell residuals
+    ks_pvals <- sapply(fit_list, function(fit) { # for each fitted model
+        cs <- coxsnell_flexsurvreg(fit) # get the coxsnell residuals
+        km_fit <- survfit(Surv(cs$est, cs$status) ~ 1) # fit a km curve to those residuals (*reason below)
+
+        # data from km_fit
+        obs_times <- km_fit$time
+        emp_surv <- km_fit$surv
+
+        # data from a theoretical population with exponential hazard
+        theo_surv <- exp(-obs_times)
+
+        # are they the same thing?
+        ks_pval <- ks.test(emp_surv, theo_surv)$p.value
+    })
+    # *reason for that km fit
+    # - CS residuals should resemble data from an Exp(1) without censoring
+    # - fitting a KM to it effectively handles the censoring present
+    # - check https://search.r-project.org/CRAN/refmans/flexsurv/html/coxsnell_flexsurvreg.html
+
+    # use the dicitonary from above
+    dist_names <- names(aics) # this is a named vector and we can use it
+    dist_labels <- pretty_dict[dist_names]
+    dist_labels[is.na(dist_labels)] <- dist_names[is.na(dist_labels)]
+
+    # compile in a table, then sort it
+    comparison <- data.frame(
+        Distribution = dist_labels,
+        AIC = aics,
+        LogLik = logliks,
+        KS_p = ks_pvals,
+        row.names = NULL
+    )
+    comparison <- comparison[order(comparison$AIC), ]
+
+    # reorder everything else (useful later)
+    fit_list_ordered <- fit_list[comparison$Distribution %>% match(dist_labels)]
+    # dist_ordered <- dist_names[order(aics)]
+    # dist_labels_ordered <- dist_labels[order(aics)]
+
+
+    # now let's produce plots in a table as well:
+    n_dists <- length(fit_list_ordered)
+    n_funcs <- length(funcs)
+    op <- par(no.readonly = TRUE) # save old par settings
+    par(mfrow = c(n_funcs, n_dists), mar = c(2, 2, 6, 1), oma = c(4, 4, 6, 2)) # margins and layout
+
+    # # titles (top row)
+    # for (label in dist_labels_ordered) {
+    #   plot.new()
+    #   title(main = label, cex.main = 1.2)
+    # }
+
+    # the actual plots
+    for (func in funcs) {
+        for (dist in dist_names) {
+            fit <- fit_list[[dist]]
+            if (func == funcs[1]) {
+                plot(fit,
+                    type = func, xlab = "", ylab = func,
+                    main = paste0(pretty_dict[[dist]], "\nAIC: ", round(aics[dist], 2), "\nfit p-val: ", round(ks_pvals[dist], 3))
+                )
+            } else {
+                plot(fit, type = func, xlab = "", ylab = func, main = NULL)
+            }
+        }
+    }
+
+    # extras
+    mtext("Time", side = 1, outer = TRUE, line = 2)
+    mtext("", side = 2, outer = TRUE, line = 2)
+    mtext(plot_title, side = 3, outer = TRUE, line = 4, cex = 1.5)
+
+    plot <- recordPlot()
+
+    par(op) # reset plotting parameters
+
+    invisible(list(fits = fit_list, comparison = comparison, plot = plot))
+}
