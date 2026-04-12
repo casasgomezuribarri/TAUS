@@ -209,7 +209,7 @@ f_t <- f_t_census(
   ncol = 1
 )
 # save plot
-# ggsave(plot = f_t, paste0("Figures/", plot_names, "_histograms.png"), width = 6.5, height = 4.5, dpi = 400)
+ggsave(plot = f_t, paste0("Figures/", plot_names, "_histograms.png"), width = 6.5, height = 4.5, dpi = 400)
 
 # formatting is dataset-specific
 
