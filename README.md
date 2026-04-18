@@ -51,12 +51,14 @@ pairwise_test(out, var_values = c("A", "B"), tau_values = c(4, 4), B = 500)
 devtools::test()   # or: testthat::test_local(".")
 ```
 
+
 ## Authors
 
 Iván Casas Gomez-Uribarri (maintainer), Simon A. Babayan, Fredros Okumu, Francesco Baldini, Mauro Pazmiño Betancourth.
 
 Methodology: see the TAUS manuscript
-- doi:
-- the code, data and figures from the manuscript can be accessed in this repository under TAUS_paper
+- doi: https://doi.org/10.64898/2026.04.15.718114
+- the code, data and figures from the manuscript can be accessed in this repository under TAUS_paper/
+- running the file TAUS_paper/comparing_models.R line by line replicates the analysis shown in the manuscript
 
 ---
