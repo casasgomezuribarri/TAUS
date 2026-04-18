@@ -1,5 +1,7 @@
 # TAUS: Target-Age Unified Survival (R package)
 
+[![Hippocratic License HL3-BDS-CL-SUP-SV](https://img.shields.io/static/v1?label=Hippocratic%20License&message=HL3-BDS-CL-SUP-SV&labelColor=5e2751&color=bc8c3d)](https://firstdonoharm.dev/version/3/0/bds-cl-sup-sv.html)
+
 **TAUS** computes conditional survival P(T>τ|T>t) and the probability O_τ that a randomly sampled individual of unknown age will outlive a target age τ. It does not assume proportional hazards or a parametric survival form. Pairwise comparison of O_τ across groups is supported via a Beta–Kolmogorov–Smirnov bootstrap.
 
 ## Installation
@@ -56,9 +58,5 @@ Iván Casas Gomez-Uribarri (maintainer), Simon A. Babayan, Fredros Okumu, France
 Methodology: see the TAUS manuscript
 - doi:
 - the code, data and figures from the manuscript can be accessed in this repository under TAUS_paper
-
-## Licence
-
-None
 
 ---
