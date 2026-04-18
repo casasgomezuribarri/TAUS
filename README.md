@@ -31,7 +31,7 @@ dat <- tibble(
   group = c(rep("A", 4), rep("B", 4))
 )
 # Conditional survival matrix and O_tau
-out <- cond_surv_mat(dat, var = "group", time_var = "time", event_var = "event", res = 2)
+out <- cond_surv_mat(dat, var = "group", time_var = "time", event_var = "event", res = 1)
 # Pairwise comparison at tau = 4
 pairwise_test(out, var_values = c("A", "B"), tau_values = c(4, 4), B = 500)
 ```
